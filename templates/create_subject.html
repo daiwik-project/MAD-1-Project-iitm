@@ -1,0 +1,240 @@
+<!-- create_subject.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beautiful Flask Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            color: #343a40; 
+        }
+        .navbar {
+            background: linear-gradient(135deg, black, #34495e);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .container {
+            max-width: 700px; 
+            margin: 40px auto; 
+            padding: 30px;  
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px; 
+            border: 1px solid #dee2e6; 
+        }
+
+        .textfield {
+            margin-bottom: 25px; 
+        }
+
+        .textfield label {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-weight: 500; 
+            color: #495057; 
+        }
+
+        .textfield input {
+            width: 100%;
+            padding: 14px 18px; 
+            font-size: 1rem;
+            border: 1px solid #ced4da; 
+            border-radius: 6px;  
+            box-sizing: border-box;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; 
+        }
+
+        .textfield input:focus {
+            outline: none;
+            border-color: #80bdff; 
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); 
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: flex-start; 
+            gap: 15px; 
+        }
+
+        .btn {
+            padding: 10px 22px; 
+            font-size: 1rem;
+            border: none;
+            border-radius: 6px; 
+            cursor: pointer;
+            transition: all 0.3s ease; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            font-weight: 500;
+        }
+
+        .btn-save {
+            background-color: #28a745;
+            color: white;
+            border: 1px solid #28a745; 
+        }
+        .btn-save:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+
+        .btn-reset {
+            background-color: #dc3545; 
+            color: white;
+             border: 1px solid #dc3545;
+        }
+        .btn-reset:hover {
+            background-color: #c82333; 
+            border-color: #bd2130;
+        }
+
+        .btn-go-back {
+            background-color: #007bff; 
+            color: white;
+            margin-top: 20px;
+            
+            display: block; 
+            width: fit-content;
+             border: 1px solid  #007bff;
+        }
+
+        .btn-go-back:hover {
+            background-color: #0069d9; 
+            border-color: #0062cc;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px; 
+            font-size: 0.9rem;
+            color: #6c757d; 
+        }
+
+        .title {
+            text-align: center; 
+            margin-bottom: 30px; 
+            font-size: 2rem;
+            font-weight: 600; 
+            color: #343a40
+        }
+
+        
+        .alert {
+            margin-bottom: 20px;
+            border-radius: 6px;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .alert-dismissible .btn-close {
+            padding: 0.5rem 0.75rem;
+           
+        }
+
+  
+         .navbar-brand {
+            font-weight: 600;  
+        }
+        .nav-link {
+            font-size: 1.1rem; 
+            margin-right: 15px;
+        }
+        .navbar-nav .nav-link.active {
+            font-weight: 500; 
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Admin Panel</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{url_for('admin_dashboard')}}"><i class="fas fa-book"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('admin_summary')}}"><i class="fas fa-chart-line"></i> Summary</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('admin_search')}}"><i class="fas fa-question-circle"></i> Search</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('home')}}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<a href="{{url_for('admin_dashboard')}}" class="btn btn-go-back">Go Back</a>
+
+<div class="container">
+    <h2 class="tite">Create Subject</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <form action="{{url_for('create_subject')}}" method="POST">
+        <div class="textfield">
+            <label for="subject_name">Subject Name</label>
+            <input type="text" id="subject_name" name="subject_name" required placeholder="Enter subject name">
+        </div>
+        <div class="textfield">
+            <label for="subject_description">Description</label>
+            <input type="text" id="subject_description" name="subject_description" required placeholder="Enter subject description">
+        </div>
+
+        <div class="buttons-container">
+            <button type="submit" class="btn btn-save">
+                <i class="fas fa-save"></i> Save
+            </button>
+
+            <a href="{{ url_for('create_subject')}}" type="reset" class="btn btn-reset">
+                <i class="fas fa-undo"></i> Reset
+            </a>
+        </div>
+    </form>
+</div>
+
+<footer>
+    <p>&copy; 2025 My Application</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

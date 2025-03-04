@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Result</title>
+    <style>
+        body {
+            font-family: 'Lato', Arial, sans-serif;
+            background: #f8f8f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6e7dff, #c57ff5);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .quiz-result {
+            margin-bottom: 40px;
+        }
+
+        .quiz-result h2 {
+            font-size: 3em;
+            color: #333;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .quiz-result p {
+            font-size: 1.2em;
+            color: #555;
+            margin-top: 20px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .question-card {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            margin-bottom: 35px;
+            padding: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: left;
+        }
+
+        .question-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .question-card h3 {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .options p {
+            font-size: 1.15em;
+            margin: 0;
+            padding: 14px;
+            background-color: #f7f7f7;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            color: #444;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .options p:hover {
+            background-color: #ff6f61;
+            color: #fff;
+            transform: translateX(5px);
+            box-shadow: 0 2px 12px rgba(255, 111, 97, 0.3);
+        }
+
+        .answer {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .correct {
+            color: #4caf50;
+        }
+
+        .wrong {
+            color: #e53935;
+        }
+
+        .back-link {
+            margin-top: 25px;
+            font-size: 1.2em;
+        }
+
+        .back-link a {
+            text-decoration: none;
+            color: #ff6f61;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: #333;
+        }
+
+        hr {
+            border: 0;
+            border-top: 2px solid #ddd;
+            margin: 25px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 25px;
+            }
+
+            .quiz-result h2 {
+                font-size: 2.2em;
+            }
+
+            .question-card h3 {
+                font-size: 1.6em;
+            }
+
+            .options p {
+                font-size: 1em;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="quiz-result">
+            <h2>Quiz Result</h2>
+            <p>Your Score: {{ user_score }} Marks Out of {{max_scores}} Marks</p>
+        </div>
+
+        {% for q in questions %}
+            <div class="question-card">
+                <h3>{{ q.question_statement }}</h3>
+
+                <div class="options">
+                    <p>A: {{ q.option1 }}</p>
+                    <p>B: {{ q.option2 }}</p>
+                    <p>C: {{ q.option3 }}</p>
+                    <p>D: {{ q.option4 }}</p>
+                </div>
+
+                {% set user_answer = user_answers.get(q.uuid) %}
+                {% if user_answer %}
+                    <div class="answer {{ 'correct' if user_answer.is_correct else 'wrong' }}">
+                        You selected: {{ user_answer.selected_option }}
+                        {% if not user_answer.is_correct %}
+                            (Correct: {{ q.correct_option }})
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                <hr>
+            </div>
+        {% endfor %}
+
+        <div class="back-link">
+            <a href="{{ url_for('user_dashboard', id=user_id) }}">Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>
+
+

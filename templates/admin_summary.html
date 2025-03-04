@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Summary</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        .navbar {
+            background: linear-gradient(135deg, black, #34495e);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: bold;
+        }
+
+        .chart-container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        canvas {
+            border-radius: 8px;
+        }
+
+        .chart-container:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Admin Panel</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('admin_dashboard')}}"><i class="fas fa-book"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{url_for('admin_summary')}}"><i class="fas fa-chart-line"></i> Summary</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('admin_search')}}"><i class="fas fa-question-circle"></i> Search</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('home')}}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Admin Dashboard Summary</h1>
+
+        <div class="grid">
+            <div class="chart-container">
+                <h5>Quiz by Subject</h5>
+                <canvas id="subjectPieChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h5>Trending Quizzes</h5>
+                <canvas id="trendyBarChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h5>Subject Wise Quiz Attempts</h5>
+                <canvas id="subjectQuizChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h5>Subject Wise Top Score</h5>
+                <canvas id="subjectScoreChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h5>Student with Highest Number of Attempts</h5>
+                <canvas id="student_chart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Convert the quizzes_per_subject from Flask context (Python) to JavaScript
+        const quizzesPerSubject = {{ quizzes_per_subject | tojson }};
+        const labels = Object.keys(quizzesPerSubject);  // Subject names
+        const data = Object.values(quizzesPerSubject);  // Quiz counts
+
+        // Pie chart: Quiz attempts by subject with bright colors
+        const ctx = document.getElementById('subjectPieChart').getContext('2d');
+        const subjectPieData = {
+            labels: labels,
+            datasets: [{
+                label: 'No. of Quizzes',
+                data: data,
+                backgroundColor: [
+                    '#ff6f61', // Coral red
+                    '#3b82f6', // Bright blue
+                    '#34d399', // Mint green
+                    '#fbbf24', // Amber yellow
+                ],
+                borderColor: ['#ff5733', '#0081c9', '#28a745', '#f59e0b'],
+                borderWidth: 2,
+                hoverOffset: 10,
+                hoverBorderWidth: 3
+            }]
+        };
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: subjectPieData,
+            options: {
+                responsive: true,
+                animation: {
+                    animateScale: true,
+                    animateRotate: true
+                }
+            }
+        });
+
+        // Prepare data for the Bar Chart for trending quizzes
+        const topTrendingQuizzes = {{ top_trending_quizzes | tojson }};
+        const trendingLabels = Object.keys(topTrendingQuizzes);
+        const trendingData = Object.values(topTrendingQuizzes);
+
+        const ctx2 = document.getElementById('trendyBarChart').getContext('2d');
+        const trendyBarData = {
+            labels: trendingLabels,
+            datasets: [{
+                label: 'Number of Attempts Unique Quizzes',
+                data: trendingData,
+                backgroundColor: ['#65000b', '#fa8072', '#34d399', '#9932cc', '#ff0800', '#556b2f' ], // Coral red
+                borderColor: ['#65000b', '#fa8072', '#34d399', '#9932cc', '#ff0800', '#556b2f' ],
+                borderWidth: 2,
+            }]
+        };
+
+        new Chart(ctx2, {
+            type: 'bar',
+            data: trendyBarData,
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        backgroundColor: '#333',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#ddd',
+                        borderWidth: 1
+                    }
+                }
+            }
+        });
+
+        // Subject-wise quiz attempts
+        const subject_quiz_data = {{ subject_wise_quiz_attempts | tojson }};
+        const sub_quiz_label = Object.keys(subject_quiz_data);
+        const sub_quiz_data = Object.values(subject_quiz_data);
+
+        const ctx3 = document.getElementById('subjectQuizChart').getContext('2d');
+        const subject_quiz_info = {
+            labels: sub_quiz_label,
+            datasets: [{
+                label: 'No. of Quizzes',
+                data: sub_quiz_data,
+                backgroundColor: ['#34d399', '#9932cc','#ff0800', '#65000b', '#fa8072', '#556b2f' ], // Mint green
+                borderColor: ['#34d399', '#9932cc','#ff0800', '#65000b', '#fa8072', '#556b2f' ],
+                // borderColor: '#28a745',
+                borderWidth: 2
+            }]
+        };
+
+        new Chart(ctx3, {
+            type: 'doughnut',
+            data: subject_quiz_info,
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        backgroundColor: '#333',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#ddd',
+                        borderWidth: 1
+                    }
+                }
+            }
+        });
+
+        // Subject-wise top score
+        const subject_score_data = {{ subject_wise_top_score | tojson }};
+        const sub_score_label = Object.keys(subject_score_data);
+        const sub_score_data = Object.values(subject_score_data);
+
+        const ctx4 = document.getElementById('subjectScoreChart').getContext('2d');
+        const subject_score_info = {
+            labels: sub_score_label,
+            datasets: [{
+                label: "Top Score",
+                data: sub_score_data,
+                // background: '#fbbf24', // Amber yellow
+                backgroundColor: '#ffd700', // Amber yellow
+                borderColor: '#f59e0b',
+                borderWidth: 2
+            }]
+        };
+
+        new Chart(ctx4, {
+            type: 'bar',
+            data: subject_score_info,
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        backgroundColor: '#333',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#ddd',
+                        borderWidth: 1
+                    }
+                }
+            }
+        });
+        // Assuming data is passed as student_chart
+        const studentData = {{ student_data | tojson }};
+        const studentLabels = Object.keys(studentData);
+        const studentScores = Object.values(studentData);
+
+        const ctx5 = document.getElementById('student_chart').getContext('2d');
+        const studentChartData = {
+            labels: studentLabels,
+            datasets: [{
+                label: 'Number of Quizzes Attempted',
+                data: studentScores,
+                backgroundColor: ['#ff6f61', '#3b82f6', '#34d399', '#fbbf24', '#65000b'],
+                borderColor: ['#ff5733', '#0081c9', '#28a745', '#f59e0b'],
+                borderWidth: 2
+            }]
+        };
+        const studentChart = new Chart(ctx5, {
+            type: 'bar',
+            data: studentChartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        backgroundColor: '#333',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#ddd',
+                        borderWidth: 1
+                    }
+                }
+            }
+        });
+
+
+    </script>
+
+</body>
+
+</html>

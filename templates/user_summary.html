@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Quiz Summary</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0e0e0e; 
+            color: #ffffff;  
+            padding: 20px;
+            margin: 0;
+        }
+            .navbar {
+            background: linear-gradient(135deg, #4e54c8, #8f94fb);
+            padding: 15px 30px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            position: sticky;
+
+            top: 0;
+            z-index: 100;
+           
+        }
+
+        .navbar h1 {
+            font-size: 28px;
+         
+            font-weight: 700;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 25px;
+
+        }
+
+        .navbar .nav-links a {
+            color: white;
+            font-size: 15px;
+            transition: transform 0.3s ease, color 0.3s ease;
+            display: flex;
+            align-items: center; 
+            gap: 5px; 
+        }
+
+        .navbar .nav-links a:hover {
+            color: #b3e5fc;
+            transform: scale(1.05);
+        }
+
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: #1a1a1a; 
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5); 
+            border: 1px solid #333; 
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #fff; 
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px; 
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .chart-container {
+            background-color: #292929; 
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #444;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .chart-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;  
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            text-align: center; 
+        }
+
+        canvas {
+            max-width: 100%;
+            border-radius: 12px;
+        }
+
+        canvas:hover {
+            transform: scale(1.05);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .pie-chart {
+            background-color: #333;
+            border: 2px solid #555; 
+        }
+
+        .bar-chart {
+            background-color: #333;
+            border: 2px solid #555;
+        }
+
+        .line-bar-chart {
+            background-color: #333;
+            border: 2px solid #555;
+        }
+
+        .doughnut-chart {
+            background-color: #333;
+            border: 2px solid #555;
+        }
+
+        @media (max-width: 992px) { 
+            h1 {
+                font-size: 2rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr; 
+            }
+
+            .chart-header {
+                font-size: 1.3rem; 
+            }
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .navbar h1 {
+                font-size: 24px; 
+                margin-bottom: 10px; 
+            }
+
+            .navbar .nav-links {
+                flex-direction: column;
+                gap: 10px; 
+                align-items: flex-start;
+            }
+
+            .navbar .nav-links a {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 576px) { 
+            h1 {
+                font-size: 1.8rem; 
+            }
+
+            .chart-header {
+                font-size: 1.1rem; 
+            }
+        }
+
+        .total-attempts {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4CAF50; 
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #292929; 
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); 
+            border: 1px solid #444; 
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <h1>Dashboard</h1>
+        <div class="nav-links">
+            <a href="{{url_for('user_search', user_id=user_id)}}">Search <i class="fas fa-search"></i></a>
+            <a href="{{ url_for('user_dashboard', id=user_id)}}">Main Page <i class="fas fa-chart-line"></i></a>
+            <a href="{{url_for('login')}}">Logout <i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>User Dashboard Summary</h1>
+
+        <div class="total-attempts">
+            Total Unique Quiz Attempts: {{ total_quiz_attempts }}
+        </div>
+
+        <div class="grid">
+            <div class="chart-container doughnut-chart">
+                <h3 class="chart-header">Subject-Wise Quiz Attempts</h3>
+                <canvas id="subjectWiseAttemptsChart"></canvas>
+            </div>
+
+            <div class="chart-container bar-chart">
+                <h3 class="chart-header">Highest Score Quiz-Wise in ( % )</h3>
+                <canvas id="highestScoreChart"></canvas>
+            </div>
+
+            <div class="chart-container line-bar-chart">
+                <h3 class="chart-header">Month-Wise Quiz Attempts</h3>
+                <canvas id="monthWiseAttemptsChart"></canvas>
+            </div>
+
+            <div class="chart-container bar-chart">
+                <h3 class="chart-header">Average Score per Subject in ( % )</h3>
+                <canvas id="averageScoreChart"></canvas>
+            </div>
+
+            <div class="chart-container doughnut-chart">
+                <h3 class="chart-header">Quizzes Attempted Chapter-Wise </h3>
+                <canvas id="quizzesAttemptedChart"></canvas>
+            </div>
+
+            <div class="chart-container bar-chart">
+                <h3 class="chart-header">Best Score in Each Subject in ( % )</h3>
+                <canvas id="bestScoreChart"></canvas>
+            </div>
+
+            <div class="chart-container bar-chart">
+                <h3 class="chart-header">Number of Attempts per Quiz</h3>
+                <canvas id="attemptsPerQuizChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const subjectWiseAttemptsData = {{ subject_wise_quiz_attempts | tojson }};
+        const subjectWiseAttemptsLabels = Object.keys(subjectWiseAttemptsData);
+        const subjectWiseAttemptsValues = Object.values(subjectWiseAttemptsData);
+
+        new Chart(document.getElementById('subjectWiseAttemptsChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: subjectWiseAttemptsLabels, 
+                datasets: [{
+                    data: subjectWiseAttemptsValues,
+                    backgroundColor: ['#ff6f61', '#3b82f6', '#34d399', '#fbbf24', '#9932cc', '#65000b', '#fa8072', '#556b2f'], 
+                    borderColor: ['#ff5733', '#0081c9', '#28a745', '#f59e0b', '#800080', '#8b0000', '#e9967a', '#6b8e23'], 
+                    borderWidth: 2
+                }]
+            },
+            options: { 
+                responsive: true,
+                plugins: {  
+                    legend: {
+                        labels: {
+                            color: "#fff" 
+                        }
+                    }
+                }
+             }
+        });
+
+        const highestScoreData = {{ highest_score_quiz_wise | tojson }};
+        const highestScoreLabels = Object.keys(highestScoreData);
+        const highestScoreValues = Object.values(highestScoreData);
+
+        new Chart(document.getElementById('highestScoreChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: highestScoreLabels, 
+                datasets: [{
+                    label: 'Highest Score',
+                    data: highestScoreValues,
+                    backgroundColor: '#4e54c8', 
+                    borderColor: '#8f94fb',
+                    borderWidth: 2
+                }]
+            },
+            options: { 
+                responsive: true, 
+                scales: { 
+                    y: { beginAtZero: true },
+                    x: {  
+                        ticks: {
+                            color: '#fff' 
+                        }
+                    }
+                 },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: "#fff"
+                        }
+                    }
+                }
+            }
+        });
+
+
+        const monthWiseAttemptsData = {{ month_wise_quiz_attempts | tojson }};
+        const monthWiseAttemptsLabels = Object.keys(monthWiseAttemptsData);
+        const monthWiseAttemptsValues = Object.values(monthWiseAttemptsData);
+
+        new Chart(document.getElementById('monthWiseAttemptsChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: monthWiseAttemptsLabels, 
+                datasets: [{
+                    label: 'Quiz Attempts',
+                    data: monthWiseAttemptsValues,
+                    borderColor: '#b3e5fc', 
+                    backgroundColor: 'rgba(179, 229, 252, 0.2)',
+                    borderWidth: 2,
+                    fill: true
+                }]
+            },
+            options: { 
+                responsive: true, 
+                scales: { 
+                    y: { beginAtZero: true },
+                    x: {
+                        ticks: {
+                            color: '#fff'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: "#fff"
+                        }
+                    }
+                }
+            }
+        });
+
+        const averageScoreData = {{ average_score_per_subject | tojson }};
+        const averageScoreLabels = Object.keys(averageScoreData);
+        const averageScoreValues = Object.values(averageScoreData);
+
+        new Chart(document.getElementById('averageScoreChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: averageScoreLabels,
+                datasets: [{
+                    label: 'Average Score',
+                    data: averageScoreValues,
+                    backgroundColor: '#4e54c8',
+                    borderColor: '#8f94fb',
+                    borderWidth: 2
+                }]
+            },
+            options: { 
+                responsive: true, 
+                scales: { 
+                    y: { beginAtZero: true },
+                    x: {
+                        ticks: {
+                            color: '#fff'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: "#fff"
+                        }
+                    }
+                }
+            }
+        });
+
+        const quizzesAttemptedData = {{ quizzes_attempted_per_chapter | tojson }};
+        const quizzesAttemptedLabels = Object.keys(quizzesAttemptedData);
+        const quizzesAttemptedValues = Object.values(quizzesAttemptedData);
+
+        new Chart(document.getElementById('quizzesAttemptedChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: quizzesAttemptedLabels, 
+                datasets: [{
+                    data: quizzesAttemptedValues,
+                    backgroundColor: ['#ff6f61', '#3b82f6', '#34d399', '#fbbf24', '#9932cc', '#65000b', '#fa8072', '#556b2f'],
+                    borderColor: ['#ff5733', '#0081c9', '#28a745', '#f59e0b', '#800080', '#8b0000', '#e9967a', '#6b8e23'],
+                    borderWidth: 2
+                }]
+            },
+            options: { 
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: "#fff"
+                        }
+                    }
+                }
+            }
+        });
+
+        const bestScoreData = {{ best_score_in_each_subject | tojson }};
+        const bestScoreLabels = Object.keys(bestScoreData);
+        const bestScoreValues = Object.values(bestScoreData);
+
+        new Chart(document.getElementById('bestScoreChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: bestScoreLabels,  
+                datasets: [{
+                    label: 'Best Score',
+                    data: bestScoreValues,
+                    backgroundColor: '#4e54c8',
+                    borderColor: '#8f94fb',
+                    borderWidth: 2
+                }]
+            },
+            options: { 
+                responsive: true, 
+                scales: { 
+                    y: { beginAtZero: true },
+                    x: {
+                        ticks: {
+                            color: '#fff'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: "#fff"
+                        }
+                    }
+                }
+            }
+        });
+
+        const attemptsPerQuizData = {{ number_of_attempts_per_quiz | tojson }};
+        const attemptsPerQuizLabels = Object.keys(attemptsPerQuizData);
+        const attemptsPerQuizValues = Object.values(attemptsPerQuizData);
+
+        new Chart(document.getElementById('attemptsPerQuizChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: attemptsPerQuizLabels,  
+                datasets: [{
+                    label: 'Number of Attempts',
+                    data: attemptsPerQuizValues,
+                    backgroundColor: '#4e54c8',
+                    borderColor: '#8f94fb',
+                    borderWidth: 2
+                }]
+            },
+            options: { 
+                responsive: true, 
+                scales: { 
+                    y: { beginAtZero: true },
+                    x: {
+                        ticks: {
+                            color: '#fff'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: "#fff"
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>

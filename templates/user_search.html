@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Search Quizzes</title>
+    
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+    
+            body {
+                font-family: 'Poppins', sans-serif;
+                background-color: #0e0e0e;
+                color: #f4f4f4;
+                line-height: 1.6;
+            }
+    
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
+    
+            .navbar {
+                background: linear-gradient(135deg, #4e54c8, #8f94fb);
+                padding: 15px 30px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+    
+            .navbar h1 {
+                font-size: 28px;
+                font-weight: 700;
+                color: white;
+                letter-spacing: 1px;
+            }
+    
+            .navbar .nav-links {
+                display: flex;
+                gap: 25px;
+            }
+    
+            .navbar .nav-links a {
+                color: white;
+                font-size: 15px;
+                transition: transform 0.3s ease, color 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+    
+            .navbar .nav-links a:hover {
+                color: #b3e5fc;
+                transform: scale(1.05);
+            }
+    
+            .search-container {
+                padding: 40px 30px;
+                max-width: 1300px;
+                margin: 30px auto;
+            }
+    
+            .search-form {
+                display: flex;
+                align-items: center;
+                background-color: #1a1a1a; 
+                border-radius: 50px;        
+                padding: 5px 10px;       
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+                margin-bottom: 30px;
+                max-width: 600px;           
+                margin-left: auto;         
+                margin-right: auto;        
+                transition: box-shadow 0.3s ease; 
+            }
+            .search-form:focus-within{
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.7); 
+            }
+    
+    
+            .search-form select {
+                background: none;
+                border: none;
+                outline: none;
+                color: #ddd;
+                font-size: 16px;
+                padding: 10px;
+                border-radius: 30px 0 0 30px; 
+                appearance: none; 
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                padding-right: 30px; 
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ddd' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E"); 
+                background-repeat: no-repeat;
+                background-position: right 10px center;
+                background-size: 18px 18px;
+                cursor: pointer;
+                transition: background-color 0.3s ease; 
+    
+            }
+             .search-form select:focus {
+                  background-color: #2c2c2c; 
+    
+             }
+    
+            .search-form input[type="text"] {
+                flex-grow: 1;
+                background: none;
+                border: none;
+                outline: none;
+                color: #ddd;
+                font-size: 16px;
+                padding: 10px;
+                transition: background-color 0.3s ease;  
+    
+            }
+    
+            .search-form input[type="text"]::placeholder {
+                color: #aaa;
+                font-style: italic;
+            }
+            .search-form input[type="text"]:focus::placeholder{
+                color: transparent;
+            }
+    
+            .search-form button {
+                background-color: #4e54c8;  
+                border: none;
+                outline: none;
+                color: white;
+                font-size: 16px;
+                font-weight: 500;
+                cursor: pointer;
+                padding: 10px 20px;         
+                border-radius: 30px;        
+                transition: background-color 0.3s ease;
+            }
+    
+            .search-form button:hover {
+                background-color: #8f94fb;  
+            }
+    
+    
+            .search-results {
+                margin-top: 20px;
+            }
+    
+            .search-results table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+    
+            .search-results th,
+            .search-results td {
+                padding: 12px 15px;
+                text-align: left;
+                border: 1px solid #333;
+            }
+    
+            .search-results th {
+                background-color: #4e54c8;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+    
+            .search-results td {
+                background-color: #1a1a1a;
+                color: #ddd;
+                font-size: 14px;
+            }
+    
+            .search-results tr:nth-child(even) td {
+                background-color: #292929;
+            }
+    
+            .search-results tr:hover td {
+                background-color: #333;
+                color: white;
+            }
+    
+            .search-results th,
+            .search-results td {
+                border-top: 1px solid #444;
+                border-bottom: 1px solid #444;
+            }
+    
+            .search-results tbody tr:last-child td {
+                border-bottom: 1px solid #333;
+            }
+    
+            .search-results td {
+                transition: background-color 0.3s ease;
+            }
+            .search-results p {
+                text-align: center;
+                font-style: italic;
+                color: #aaa;
+                margin-top: 20px;
+            }
+    
+    
+            .footer {
+                text-align: center;
+                padding: 20px;
+                background-color: #1a1a1a;
+                color: #999;
+                margin-top: 50px;
+                border-top: 1px solid #333;
+            }
+    
+            @media (max-width: 992px) {
+                .navbar {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+    
+                .navbar h1 {
+                    font-size: 24px;
+                    margin-bottom: 10px;
+                }
+    
+                .navbar .nav-links {
+                    flex-direction: column;
+                    gap: 10px;
+                    align-items: flex-start;
+                }
+    
+                .navbar .nav-links a {
+                    font-size: 14px;
+                }
+    
+                .search-container {
+                    padding: 20px;
+                }
+    
+                 .search-form{
+                    flex-direction: column;
+                 }
+                .search-form select{
+                    border-radius: 30px;
+                    margin-bottom: .5rem;
+                    width: 100%;
+                    padding-right: 10px; 
+                    background-position: right 10px center; 
+                }
+    
+    
+            }
+    
+            @media (max-width: 576px) {
+                .navbar h1 {
+                    font-size: 20px;
+                }
+    
+                .navbar .nav-links a {
+                    font-size: 12px;
+                }
+            }
+        </style>
+    </head>
+<body>
+
+    <div class="navbar">
+        <h1>Search Quizzes</h1>
+        <div class="nav-links">
+             <a href="{{ url_for('user_dashboard', id=user_id) }}">Dashboard <i class="fas fa-tachometer-alt"></i></a>
+            <a href="{{url_for('user_summary', user_id=user_id)}}">Summary <i class="fas fa-chart-line"></i></a>
+            <a href="{{url_for('login')}}">Logout <i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </div>
+
+    <div class="search-container">
+         <form method="POST" action="{{ url_for('user_search', user_id=user_id) }}" class="search-form">
+            <select name="parameter" id="parameter" required onchange="this.form.submit()">
+                <option value="" disabled selected>Select Parameter</option>
+                <option value="quiz_title" {% if selected_parameter == 'quiz_title' %} selected {% endif %}>Quiz Title</option>
+                <option value="date" {% if selected_parameter == 'date' %} selected {% endif %}>Date</option>
+                <option value="chapter_name" {% if selected_parameter == 'chapter_name' %} selected {% endif %}>Chapter Name</option>
+                <option value="subject_name" {% if selected_parameter == 'subject_name' %} selected {% endif %}>Subject Name</option>
+                <option value="score" {% if selected_parameter == 'score' %} selected {% endif %}>Score</option>
+            </select>
+
+            <input type="text" name="query" id="searchQuery" placeholder="{{ placeholder }}" required>
+
+            <button type="submit"><i class="fas fa-search"></i> Search</button>
+        </form>
+
+        <div class="search-results" id="searchResults">
+            {% if search_dict %}
+                <table>
+                    <thead>
+                        <tr>
+                            {% for key, value in search_dict.items() %}
+                                <th scope="col">{{ key }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for idx in range(search_dict['Quiz title']|length) %}
+                            <tr>
+                                {% for key, value in search_dict.items() %}
+                                    <td>
+                                        {% if value %}
+                                            {% if value is iterable %}
+                                                {{ value[idx] }} 
+                                            {% else %}
+                                                {{ value }} 
+
+                                            {% endif %}
+                                        {% else %}
+                                            No data available
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No results found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 Ischool. All Rights Reserved.</p>
+    </div>
+
+</body>
+</html>

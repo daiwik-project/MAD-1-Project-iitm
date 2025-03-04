@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif; 
+            background-color: #0e0e0e; 
+            color: #f4f4f4;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+      
+        .navbar {
+            background: linear-gradient(135deg, #4e54c8, #8f94fb); 
+            padding: 15px 30px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); 
+            position: sticky; 
+            top: 0;
+            z-index: 100; 
+        }
+
+        .navbar h1 {
+            font-size: 28px; 
+            font-weight: 700;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 25px; 
+        }
+
+        .navbar .nav-links a {
+            color: white;
+            font-size: 15px; 
+            transition: transform 0.3s ease, color 0.3s ease;
+            display: flex; 
+            align-items: center; 
+            gap: 5px; 
+        }
+
+        .navbar .nav-links a:hover {
+            color: #b3e5fc; 
+            transform: scale(1.05); 
+        }
+
+        .dashboard-container {
+            padding: 40px 30px; 
+            max-width: 1300px; 
+            margin: 30px auto;
+        }
+
+        /* Subject Cards */
+        .postcard {
+            background: linear-gradient(145deg, #1a1a1a, #292929); 
+            border-radius: 20px; 
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); 
+            margin-bottom: 30px; 
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            border: 1px solid #333; 
+        }
+
+        .postcard:hover {
+            transform: translateY(-10px); 
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5); 
+        }
+
+        .postcard .subject-container {
+            display: flex;
+            align-items: center; 
+            justify-content: space-between; 
+            margin-bottom: 20px; 
+        }
+
+        .postcard .subject-title {
+            font-size: 26px; 
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); 
+        }
+
+        .postcard .subject-description {
+            font-size: 14px;
+            color: #bbb; 
+            font-style: italic;
+        }
+
+       
+        .chapter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px; 
+            overflow-x: auto;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); 
+        }
+
+        .chapter-table th, .chapter-table td {
+            padding: 15px 25px; 
+            text-align: center;
+            font-size: 16px; 
+            border: 1px solid #333;
+            color: #ddd;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .chapter-table th {
+            background-color: #292929; 
+            color: white;
+            font-weight: 500; 
+        }
+
+        .chapter-table tr:nth-child(even) {
+            background-color: #1e1e1e; 
+        }
+
+        .chapter-table tr:hover {
+            background-color: #3c4043; 
+            transform: scale(1.01); 
+        }
+
+        .chapter-table td.text-success {
+            color: #8bc34a; 
+        }
+
+        .chapter-table td.text-danger {
+            color: #f44336; 
+        }
+
+        .btn {
+            padding: 10px 20px; 
+            background-color: #4e54c8; 
+            color: white;
+            border-radius: 6px;
+            font-size: 15px; 
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            margin: 3px; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+        }
+
+        .btn:hover {
+            background-color: #6f74dd; 
+            transform: scale(1.03); 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
+        }
+
+        .chapter-table h3, .chapter-table h4 {
+            display: inline;
+            font-size: 18px; 
+            color: #eee; 
+            margin-right: 5px;
+        }
+        .chapter-table h3{
+            font-weight: 600;
+        }
+        .chapter-table h4{
+            font-weight: 500;
+        }
+
+        .chapter-table div > i {
+            font-style: italic;
+            color: #ccc; 
+            font-size: 14px;
+        }
+
+    
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #1a1a1a; 
+            color: #999; 
+            margin-top: 50px; 
+            border-top: 1px solid #333;
+        }
+
+        @media (max-width: 992px) { 
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .navbar h1 {
+                font-size: 24px; 
+                margin-bottom: 10px; 
+            }
+
+            .navbar .nav-links {
+                flex-direction: column;
+                gap: 10px; 
+                align-items: flex-start;
+            }
+
+            .navbar .nav-links a {
+                font-size: 14px;
+            }
+
+            .postcard {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .postcard .subject-title {
+                font-size: 22px;
+            }
+
+            .chapter-table th, .chapter-table td {
+                font-size: 14px; 
+                padding: 12px 18px; 
+            }
+
+            .chapter-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .chapter-table th, .chapter-table td {
+                text-align: left;
+            }
+
+            .btn {
+                padding: 8px 16px; 
+                font-size: 13px; 
+            }
+
+            .footer {
+                padding: 15px;
+                font-size: 13px; 
+            }
+             .postcard .subject-container {
+                flex-direction: column;
+                align-items: flex-start; 
+            }
+        }
+
+        @media (max-width: 576px) { 
+            .navbar h1 {
+                font-size: 20px; 
+            }
+
+            .navbar .nav-links a {
+                font-size: 12px;
+            }
+
+            .postcard .subject-title {
+                font-size: 20px; 
+            }
+
+            .chapter-table th, .chapter-table td {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+
+            .btn {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+            .chapter-table h3, .chapter-table h4 {
+                font-size: 16px;
+            }
+            .chapter-table div > i{
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h1>Dashboard</h1>
+        <div class="nav-links">
+            <a href="{{url_for('user_search', user_id=user_id)}}">Search <i class="fas fa-search"></i></a>
+            <a href="{{url_for('user_summary', user_id=user_id)}}">Summary <i class="fas fa-chart-line"></i></a>
+            <a href="{{url_for('login')}}">Logout <i class="fas fa-sign-out-alt"></i></a>
+            <a href="{{url_for('user_profile', id=user_id)}}">Profile <i class="fas fa-sign-out-alt"></i></a>
+        
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        {% for subject in subjects %}
+        <div class="postcard">
+            <div class="subject-container">
+                <div class="subject-title">{{ subject.subject_name }}</div>
+                <div class="subject-description"> <i class="">{{ subject.subject_description }}</i> </div>
+            </div>
+            {% for chapter in subject.chapters %}
+            <table class="chapter-table">
+                <tr><td colspan="11">
+                    <div style="margin-top: 15px !important;"><strong><h3 style="display: inline; ">Chapter {{loop.index}} : </h3>{{ chapter.chapter_name }}</strong> </div>
+                    <div><h4 style="display: inline;">Description : </h4><i>{{chapter.chapter_description}}</i></div>
+                </td></tr>
+                <thead>
+                    <tr>
+                        <th>S. No.</th>
+                        <th>Quiz Title</th>
+                        <th>Description</th>
+                        <th>Max Marks</th>
+                        <th>Correct</th>
+                        <th>Wrong</th>
+                        <th>Date</th>
+                        <th>Duration</th>
+                        <th>Questions</th>
+                        <th>Attempts</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for quiz in chapter.quizzes %}
+                    <tr>
+                        <td>{{loop.index}}</td>
+                        <td>{{ quiz.quiz_name }}</td>
+                        <td>{{ quiz.quiz_description }}</td>
+                        <td>{{ quiz.quiz_max_marks }}</td>
+                        <td class="text-success">+{{ quiz.quiz_correct_score }}</td>
+                        <td class="text-danger">-{{ quiz.quiz_wrong_score }}</td>
+                        <td >{{ quiz.quiz_date }}</td>
+                        <td>{{ quiz.quiz_duaration }} mins</td>
+                        <td>{{ quiz.total_questions }}</td>
+                        <td>{{ quiz.attempt_count }}</td> 
+                        <td>
+                            {% if quiz.attempt_count > 0  %}
+                                <a href="{{ url_for('attempt_quiz', user_id=user_id, subject_id=subject.subject_uuid, subject_name=subject.subject_name, chapter_id=chapter.chapter_uuid, chapter_name=chapter.chapter_name, quiz_id=quiz.quiz_uuid, attempt='true', attempt_no=quiz.attempt_count) }}">
+
+                                    <button class="btn">Reattempt</button>
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('attempt_quiz', user_id=user_id, subject_id=subject.subject_uuid, subject_name=subject.subject_name, chapter_id=chapter.chapter_uuid, chapter_name=chapter.chapter_name, quiz_id=quiz.quiz_uuid, attempt='true', attempt_no=quiz.attempt_count) }}">
+                                    <button class="btn">Start Quiz</button>
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="footer">
+        <p>© 2025 Ischool. All Rights Reserved.</p>
+    </div>
+
+</body>
+</html>
