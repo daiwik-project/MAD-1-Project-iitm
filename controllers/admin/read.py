@@ -11,7 +11,6 @@ def admin_dashboard_view():
             if chapter.subject_uuid == subject.uuid:
                 subject_data[3].append(chapter.name)  
         result.append(subject_data)
-    print(result)
     return result
 
 

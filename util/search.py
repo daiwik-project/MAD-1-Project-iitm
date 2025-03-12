@@ -372,5 +372,4 @@ def admin_search_result(param, query):
                 result["Quiz Title"] = quiz_titles
                 result["Date"] = dates
                 result["Score"] = scores
-    print(result)
     return result

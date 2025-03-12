@@ -3,7 +3,6 @@ from datetime import datetime
 
 def get_sub():
     subjects = Subject.query.with_entities(Subject.uuid, Subject.name).distinct().all()
-    print(subjects)
     return subjects
 
 def get_subject_chapter_course_details(user_id):

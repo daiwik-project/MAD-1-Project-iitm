@@ -65,7 +65,7 @@ class UserAnswer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_uuid = db.Column(db.String(12), db.ForeignKey('user.uuid'), nullable=False)
     attempt_no = db.Column(db.Integer, db.ForeignKey('user_quiz_attempt.attempt_number'), nullable=False)
-    quiz_uuid = db.Column(db.String(12), db.ForeignKey('quiz.uuid'), nullable=False)  # Corrected to 'quiz'
+    quiz_uuid = db.Column(db.String(12), db.ForeignKey('quiz.uuid'), nullable=False) 
     question_uuid = db.Column(db.String(12), db.ForeignKey('question.uuid'), nullable=False)
     selected_option = db.Column(db.CHAR, nullable=False)
     is_correct = db.Column(db.Integer, nullable=False)

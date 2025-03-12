@@ -66,6 +66,7 @@ def get_admin_summary():
                         else:
                             top_score = 0  
         summary["subject_wise_top_score"][subject.name] = top_score
+    
     attempt_counts = {}  
     
     user_quiz_attempts = UserQuizAttempt.query.all()
@@ -74,22 +75,18 @@ def get_admin_summary():
             attempt_counts[attempt.user_uuid] += 1
         else:
             attempt_counts[attempt.user_uuid] = 1
+    student_des = list(attempt_counts.items())
+    for al in range(len(student_des)):
+        for bl in range(al + 1, len(student_des)):
+            if student_des[al][1] < student_des[bl][1]:
+                student_des[al], student_des[bl] = student_des[bl], student_des[al]
     
-    max_attempts_student = None
-    max_attempts_count = 0
-    for user_uuid, attempts in attempt_counts.items():
-        if attempts > max_attempts_count:
-            max_attempts_count = attempts
-            max_attempts_student = user_uuid
-    
-    if max_attempts_student:
-        student = User.query.filter_by(uuid=max_attempts_student).first()
-        summary["student_highest_attempts"] = {
-            student.username: max_attempts_count
-        }
-    else:
-        summary["student_highest_attempts"] = None
-    
+    sorted_dict = dict(student_des)
+    final_dict = {}
+    for key, value in sorted_dict.items():
+        User_data = User.query.filter_by(uuid=key).first()
+        final_dict[User_data.username] = value
+    summary["student_highest_attempts"] = final_dict
     return summary
 
 
@@ -133,9 +130,7 @@ def get_user_summary(user_uuid):
                     .filter_by(user_uuid=user_uuid, quiz_uuid=quiz.uuid)  # Corrected line
                     .all())
         if user_score:
-            print(f"hi {user_score}")
             max_poss_score = quiz.max_score
-            print(max_poss_score)
             percentage = (user_score[0][0] *100) / max_poss_score
             summary["highest_score_quiz_wise"][quiz.title] = percentage
 

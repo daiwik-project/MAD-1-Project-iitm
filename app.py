@@ -1,4 +1,4 @@
-from controllers.Auth.user import create_user, find_user_id, previous_email, previous_username, verify_user
+from controllers.Auth.user import block_User, block_checker, create_user, find_user_id, get_user_info, previous_email, previous_username, unblock_User, verify_user
 from controllers.Quiz.creator import cre_ques, cre_quiz, verify_prev_quiz
 from controllers.Quiz.read import find_t_questions, get_title, get_total_cre, view_inside_chap, view_inside_quiz
 from controllers.Quiz.update import update_ques, update_quiz_info
@@ -6,7 +6,7 @@ from controllers.admin.read import admin_dashboard_view, get_chap, get_subj_des
 from controllers.admin.update import update_chap_info, update_sub_info
 from controllers.delete.delete import del_chapter, del_ques, del_quiz, del_sub
 from controllers.user.user_crud import add_answer, add_score, get_ques_and_cor_answ, get_ques_for_quiz, get_quiz_time, get_sub, get_subject_chapter_course_details, get_user_quiz_answers, get_user_quiz_score, ques_need_to_attempt, send_corr, send_wrong, user_ans, user_attempt
-from flask import Flask, render_template, request, redirect, url_for, flash 
+from flask import Flask, render_template, request, redirect, url_for, flash  # type: ignore
 from database import db
 from util.profile import update_user_profile_info, user_info
 from util.quiz import verify_chapter, verify_subject
@@ -35,11 +35,29 @@ def admin_dashboard():
     info = admin_dashboard_view()
     return render_template('admin_dashboard.html', subjects_info=info )
 
+@app.route('/admin_dashboard/user_control', methods=['GET', 'POST'])
+def user_control():
+    if request.method == 'POST':
+        a_query = request.form['query']
+        user_info = get_user_info(a_query)
+        if user_info:
+            return render_template('admin_user_ctrl.html', user_info=user_info)
+    return render_template('admin_user_ctrl.html')
+
+@app.route('/admin_dashboard/user_control/block/<username>', methods=['GET'])
+def block_user(username):
+    block_User(username)
+    return redirect(url_for('user_control'))
+
+@app.route('/admin_dashboard/user_control/unblock/<username>', methods=['GET'])
+def unblock_user(username):
+    unblock_User(username)
+    return redirect(url_for('user_control'))
+
 ############################# View Routes ################################
 # View Subject
 @app.route('/admin_dashboard/view/<subject_id>/<subject_name>')
 def view_subject(subject_id, subject_name):
-    print(f"Viewing subject with ID: {subject_id}")
     des = get_subj_des(subject_id) 
     chap = get_chap(subject_id)
     return render_template('view_subject.html', subject_id=subject_id, subject_name=subject_name, subject_description=des, chapter=chap)
@@ -73,12 +91,9 @@ def create_subject():
     if request.method == 'POST':
         name = request.form['subject_name']
         description = request.form['subject_description']
-        print(name, description)
         if name and description:
             verify_subject(name)
-            print("vh fhkckhc")
             if verify_subject(name)==None:
-                print("vh khc")
                 id = generate_uuid()
                 cre_subject(id, name, description)
                 flash('Subject created successfully', category='success')
@@ -197,7 +212,6 @@ def update_quiz_det(subject_id, subject_name, chapter_id,chapter_name, quiz_id):
     scheduled_date = request.form['quizScheduledDate']
     max_time = int(request.form['quizMaxTime'])
     total_questions = int(request.form['quiztotalquestion'])
-    print(total_questions)
     update_quiz_info(quiz_id, title, description, max_marks, correct_marks, negative_marks, scheduled_date, max_time, total_questions)
     return redirect(url_for('view_chapter', subject_id=subject_id, subject_name=subject_name, chapter_id=chapter_id,chapter_name=chapter_name))
 
@@ -267,15 +281,16 @@ def login():
         username = request.form['username']
         password = request.form['password']
         if (username and password):
-            verify_user(username, password)
-            if verify_user(username, password):
+            verify_status = verify_user(username, password)
+            active_status = block_checker(username)
+            if verify_status and active_status:
                 id = find_user_id(username)
                 flash('Login successful', category='success')
                 return redirect(url_for('user_dashboard',id=id))
             else:
-                print("LOL")
-                flash('Invalid credentials', category='danger')
-        return "You have not typed correct user id and passwordor  you are not present in our database"
+                flash('Invalid credentials or blocked by admin', category='danger')
+                return redirect(url_for('login'))
+        return "You have not typed correct user id and passwordor or you are not present in our database"
     return render_template('user_login.html')
 
 # User Dashboard
@@ -498,7 +513,6 @@ def admin_search():
         if selected_parameter and a_query:
             search_dict = admin_search_result(selected_parameter, a_query)
             iter_len = len(search_dict['Quiz Title'])
-            # print(k)
             return render_template('admin_search.html', 
                                    placeholder=placeholder,
                                    selected_parameter=selected_parameter,

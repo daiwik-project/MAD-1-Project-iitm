@@ -25,3 +25,23 @@ def verify_user(username, password):
 def find_user_id(username):
     user = User.query.filter_by(username=username).first()
     return user.uuid if user else None
+
+def block_checker(username):
+    user = User.query.filter_by(username=username).first()
+    return user.is_active if user else None
+
+def get_user_info(username):
+    user = User.query.filter(User.username.ilike(f"%{username}%")).first()
+    return user if user else None
+
+def block_User(username):
+    user = User.query.filter_by(username=username).first()
+    if user:
+        user.is_active = False
+        db.session.commit()
+
+def unblock_User(username):
+    user = User.query.filter_by(username=username).first()
+    if user:  
+        user.is_active = True
+        db.session.commit()
