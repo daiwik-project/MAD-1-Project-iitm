@@ -91,3 +91,14 @@ graph LR;
 ---
 
 🔗 **For more information, view the detailed PDF report**: [Ischool Quiz App Report](https://github.com/daiwik-project/MAD-1-Project-iitm/blob/main/MAD%20REPORT.pdf)
+
+---
+
+#### To Run the App
+1. [Download the Zip](https://github.com/daiwik-project/MAD-1-Project-iitm/archive/refs/heads/main.zip)
+2. Unzip the folder then Open Folder in Terminal
+3. Type this command 
+```script
+pip install -r requirements.txt
+python app.py
+```
